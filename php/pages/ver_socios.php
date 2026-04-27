@@ -68,6 +68,10 @@ $total_socios = count($socios);
             <span>📋</span>
             <span>Lista Completa</span>
         </a>
+        <a href="escanear_qr.php" class="menu-item">
+            <span>📷</span>
+            <span>Escanear QR</span>
+        </a>
     </div>
     
     <?php if ($usuario['rol'] == 'admin'): ?>
@@ -216,6 +220,6 @@ $total_socios = count($socios);
         console.log('✅ Búsqueda en tiempo real activada en ver_socios.php');
     });
 </script>
-
+<script src="../../js/toast.js"></script>
 </body>
 </html>

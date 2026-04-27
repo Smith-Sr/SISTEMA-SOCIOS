@@ -269,6 +269,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirmar_importacion'
             <span>📋</span>
             <span>Lista Completa</span>
         </a>
+        <a href="escanear_qr.php" class="menu-item">
+            <span>📷</span>
+            <span>Escanear QR</span>
+        </a>
     </div>
     
     <div class="menu-section">
@@ -481,7 +485,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirmar_importacion'
         </ul>
     </div>
 </div>
-
+<script src="../../js/toast.js"></script>
 <script src="../../js/menu.js"></script>
 </body>
 </html>

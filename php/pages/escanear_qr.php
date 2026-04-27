@@ -938,6 +938,6 @@ document.addEventListener('DOMContentLoaded', () => {
     iniciarEscaner();
 });
 </script>
-
+<script src="../../js/toast.js"></script>
 </body>
 </html>

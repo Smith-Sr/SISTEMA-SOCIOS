@@ -95,6 +95,14 @@ $usuarios = $stmt_usuarios->fetchAll();
 </head>
 <body>
 
+<?php if ($mensaje != ''): ?>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        toast.<?php echo $tipo_mensaje == 'success' ? 'success' : 'error'; ?>('<?php echo $mensaje; ?>');
+    });
+</script>
+<?php endif; ?>
+
 <!-- TOPBAR FIJO -->
 <div class="topbar-fixed">
     <div class="topbar-logo">
@@ -126,6 +134,10 @@ $usuarios = $stmt_usuarios->fetchAll();
         <a href="ver_socios.php" class="menu-item">
             <span>📋</span>
             <span>Lista Completa</span>
+        </a>
+        <a href="escanear_qr.php" class="menu-item">
+            <span>📷</span>
+            <span>Escanear QR</span>
         </a>
     </div>
     
@@ -188,14 +200,21 @@ $usuarios = $stmt_usuarios->fetchAll();
                 </div>
 
                 <!-- MENSAJES -->
-                <?php if ($mensaje): ?>
-                <div class="alert alert-<?php echo $tipo_mensaje; ?>">
-                    <?php 
-                        $icon = $tipo_mensaje == 'success' ? '✅' : '❌';
-                        echo $icon . ' ' . $mensaje; 
-                        ?>
-                </div>
-                <?php endif; ?>
+                <?php if ($mensaje != ''): ?>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        <?php if ($tipo_mensaje == 'success'): ?>
+            toast.success('<?php echo addslashes($mensaje); ?>');
+        <?php elseif ($tipo_mensaje == 'error'): ?>
+            toast.error('<?php echo addslashes($mensaje); ?>');
+        <?php elseif ($tipo_mensaje == 'warning'): ?>
+            toast.warning('<?php echo addslashes($mensaje); ?>');
+        <?php else: ?>
+            toast.info('<?php echo addslashes($mensaje); ?>');
+        <?php endif; ?>
+    });
+</script>
+<?php endif; ?>
 
                 <!-- FORMULARIO CREAR USUARIO -->
                 <div class="card">
@@ -346,5 +365,6 @@ $usuarios = $stmt_usuarios->fetchAll();
         }
     }
     </script>
+<script src="../../js/toast.js"></script>
 </body>
 </html>

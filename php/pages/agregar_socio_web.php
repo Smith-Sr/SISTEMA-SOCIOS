@@ -77,6 +77,14 @@ if (!isset($estado)) $estado = '';
 </head>
 <body>
 
+<?php if ($mensaje != ''): ?>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        toast.<?php echo $tipo_mensaje == 'success' ? 'success' : 'error'; ?>('<?php echo $mensaje; ?>');
+    });
+</script>
+<?php endif; ?>
+
 <!-- TOPBAR FIJO -->
 <div class="topbar-fixed">
     <div class="topbar-logo">
@@ -108,6 +116,10 @@ if (!isset($estado)) $estado = '';
         <a href="ver_socios.php" class="menu-item">
             <span>📋</span>
             <span>Lista Completa</span>
+        </a>
+        <a href="escanear_qr.php" class="menu-item">
+            <span>📷</span>
+            <span>Escanear QR</span>
         </a>
     </div>
     
@@ -176,13 +188,20 @@ if (!isset($estado)) $estado = '';
 
                 <!-- MENSAJES -->
                 <?php if ($mensaje != ''): ?>
-                <div class="alert alert-<?php echo $tipo_mensaje; ?>">
-                    <?php 
-                        $icon = $tipo_mensaje == 'success' ? '✅' : '❌';
-                        echo $icon . ' ' . $mensaje; 
-                        ?>
-                </div>
-                <?php endif; ?>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        <?php if ($tipo_mensaje == 'success'): ?>
+            toast.success('<?php echo addslashes($mensaje); ?>');
+        <?php elseif ($tipo_mensaje == 'error'): ?>
+            toast.error('<?php echo addslashes($mensaje); ?>');
+        <?php elseif ($tipo_mensaje == 'warning'): ?>
+            toast.warning('<?php echo addslashes($mensaje); ?>');
+        <?php else: ?>
+            toast.info('<?php echo addslashes($mensaje); ?>');
+        <?php endif; ?>
+    });
+</script>
+<?php endif; ?>
 
                 <!-- FORMULARIO -->
                 <div class="card">
@@ -292,5 +311,6 @@ if (!isset($estado)) $estado = '';
         
 
 <script src="../../js/menu.js"></script>
+<script src="../../js/toast.js"></script>
 </body>
 </html>

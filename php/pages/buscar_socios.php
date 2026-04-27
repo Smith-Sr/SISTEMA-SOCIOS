@@ -10,68 +10,112 @@ $usuario = getUsuarioActual();
 $socio = null;
 $stats = null;
 $error = false;
+$socios_encontrados = [];
+$busqueda_tipo = '';
+$termino_mostrar = '';
 
-if (isset($_POST['dni']) && $_POST['dni'] != '') {
-    $dni_buscar = $_POST['dni'];
+// PROCESAR POST
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['buscar'])) {
+    $termino = trim($_POST['buscar']);
     $conexion = getConexion();
 
-    $sql = "SELECT * FROM socios WHERE DNI = ?";
-    $consulta = $conexion->prepare($sql);
-    $consulta->execute([$dni_buscar]);
-    $socio = $consulta->fetch();
+    if (preg_match('/^\d{8}$/', $termino)) {
+        $sql = "SELECT * FROM socios WHERE DNI = ?";
+        $stmt = $conexion->prepare($sql);
+        $stmt->execute([$termino]);
+        $socio_temp = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if($socio) {
-        try {
-            $sql_asistencia = "INSERT INTO asistencias (socio_id, tipo_verificacion, verificado_por, ip_acceso) VALUES (?, ?, ?, ?)";
-            $stmt_asistencia = $conexion->prepare($sql_asistencia);
-            $stmt_asistencia->execute([
-                $socio['ID'],
-                'busqueda_dni',
-                $usuario['id'],
-                $_SERVER['REMOTE_ADDR']
-            ]);
-        } catch (PDOException $e) {
-            error_log("Error al registrar asistencia: " . $e->getMessage());
-        }
-
-        try {
-            $sql_stats = "SELECT 
-                            COUNT(*) as total_visitas, 
-                            MAX(fecha_hora) as ultima_visita, 
-                            MIN(fecha_hora) as primera_visita, 
-                            SUM(CASE WHEN tipo_verificacion = 'busqueda_dni' THEN 1 ELSE 0 END) as por_dni, 
-                            SUM(CASE WHEN tipo_verificacion = 'escaneo_qr' THEN 1 ELSE 0 END) as por_qr, 
-                            COUNT(CASE WHEN DATE(fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 END) as visitas_mes
-                          FROM asistencias 
-                          WHERE socio_id = ?";
-            $stmt_stats = $conexion->prepare($sql_stats);
-            $stmt_stats->execute([$socio['ID']]);
-            $stats = $stmt_stats->fetch(PDO::FETCH_ASSOC);
-
-            if (!$stats || !is_array($stats)) {
-                $stats = [
-                    'total_visitas' => 0,
-                    'ultima_visita' => null,
-                    'primera_visita' => null,
-                    'por_dni' => 0,
-                    'por_qr' => 0,
-                    'visitas_mes' => 0
-                ];
+        if ($socio_temp) {
+            // Registrar asistencia
+            try {
+                $sql_asistencia = "INSERT INTO asistencias 
+                    (socio_id, tipo_verificacion, verificado_por, ip_acceso) 
+                    VALUES (?, 'busqueda_dni', ?, ?)";
+                $stmt_asistencia = $conexion->prepare($sql_asistencia);
+                $stmt_asistencia->execute([
+                    $socio_temp['ID'],
+                    $usuario['id'],
+                    $_SERVER['REMOTE_ADDR']
+                ]);
+            } catch (PDOException $e) {
+                error_log("Error asistencia: " . $e->getMessage());
             }
-        } catch (PDOException $e) {
-            $stats = [
-                'total_visitas' => 0,
-                'ultima_visita' => null,
-                'primera_visita' => null,
-                'por_dni' => 0,
-                'por_qr' => 0,
-                'visitas_mes' => 0
-            ];
-            error_log("Error al obtener estadísticas: " . $e->getMessage());
+
+            // Stats
+            try {
+                $sql_stats = "SELECT 
+                    COUNT(*) as total_visitas,
+                    MAX(fecha_hora) as ultima_visita,
+                    MIN(fecha_hora) as primera_visita,
+                    SUM(CASE WHEN tipo_verificacion = 'busqueda_dni' THEN 1 ELSE 0 END) as por_dni,
+                    SUM(CASE WHEN tipo_verificacion = 'escaneo_qr' THEN 1 ELSE 0 END) as por_qr,
+                    COUNT(CASE WHEN DATE(fecha_hora) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) THEN 1 END) as visitas_mes
+                    FROM asistencias WHERE socio_id = ?";
+                $stmt_stats = $conexion->prepare($sql_stats);
+                $stmt_stats->execute([$socio_temp['ID']]);
+                $stats_temp = $stmt_stats->fetch(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                $stats_temp = ['total_visitas' => 0, 'ultima_visita' => null,
+                              'primera_visita' => null, 'por_dni' => 0,
+                              'por_qr' => 0, 'visitas_mes' => 0];
+            }
+
+            // Guardar en sesión y redirigir
+            $_SESSION['busqueda_socio'] = $socio_temp;
+            $_SESSION['busqueda_stats'] = $stats_temp;
+            $_SESSION['busqueda_termino'] = $termino;
+            $_SESSION['busqueda_tipo'] = 'dni';
+            header('Location: buscar_socios.php');
+            exit;
+
+        } else {
+            $_SESSION['busqueda_error'] = true;
+            $_SESSION['busqueda_termino'] = $termino;
+            header('Location: buscar_socios.php');
+            exit;
         }
+
     } else {
-        $error = true;
+        // Búsqueda por nombre
+        $like = '%' . $termino . '%';
+        $sql = "SELECT * FROM socios 
+                WHERE APELLIDOS LIKE ? OR NOMBRES LIKE ? 
+                OR CONCAT(NOMBRES, ' ', APELLIDOS) LIKE ?
+                OR CONCAT(APELLIDOS, ' ', NOMBRES) LIKE ?
+                ORDER BY APELLIDOS ASC LIMIT 20";
+        $stmt = $conexion->prepare($sql);
+        $stmt->execute([$like, $like, $like, $like]);
+        $socios_temp = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $_SESSION['busqueda_lista'] = $socios_temp;
+        $_SESSION['busqueda_termino'] = $termino;
+        $_SESSION['busqueda_tipo'] = 'nombre';
+        header('Location: buscar_socios.php');
+        exit;
     }
+}
+
+// RECUPERAR DE SESIÓN (GET)
+if (isset($_SESSION['busqueda_tipo'])) {
+    $busqueda_tipo = $_SESSION['busqueda_tipo'];
+    $termino_mostrar = $_SESSION['busqueda_termino'] ?? '';
+
+    if ($busqueda_tipo == 'dni') {
+        $socio = $_SESSION['busqueda_socio'] ?? null;
+        $stats = $_SESSION['busqueda_stats'] ?? null;
+        $error = $_SESSION['busqueda_error'] ?? false;
+    } elseif ($busqueda_tipo == 'nombre') {
+        $socios_encontrados = $_SESSION['busqueda_lista'] ?? [];
+        if (empty($socios_encontrados)) $error = true;
+    }
+
+    // Limpiar sesión
+    unset($_SESSION['busqueda_socio']);
+    unset($_SESSION['busqueda_stats']);
+    unset($_SESSION['busqueda_lista']);
+    unset($_SESSION['busqueda_termino']);
+    unset($_SESSION['busqueda_tipo']);
+    unset($_SESSION['busqueda_error']);
 }
 ?>
 <!DOCTYPE html>
@@ -119,6 +163,10 @@ if (isset($_POST['dni']) && $_POST['dni'] != '') {
         <a href="ver_socios.php" class="menu-item">
             <span>📋</span>
             <span>Lista Completa</span>
+        </a>
+        <a href="escanear_qr.php" class="menu-item">
+            <span>📷</span>
+            <span>Escanear QR</span>
         </a>
     </div>
     
@@ -185,23 +233,66 @@ if (isset($_POST['dni']) && $_POST['dni'] != '') {
                 <!-- BÚSQUEDA -->
                 <div class="card">
                     <form method="POST">
-                        <div class="search-bar">
-                            <input type="text" 
-                                   name="dni" 
-                                   class="search-input" 
-                                   placeholder="Ingrese DNI (8 dígitos)" 
-                                   required 
-                                   pattern="[0-9]{8}" 
-                                   maxlength="8" 
-                                   autofocus
-                                   value="<?php echo isset($_POST['dni']) ? htmlspecialchars($_POST['dni']) : ''; ?>">
-                            <button type="submit" class="btn btn-primary">
-                                <span>🔍</span>
-                                <span>Buscar</span>
-                            </button>
-                        </div>
-                    </form>
+    <div class="search-bar">
+        <input type="text" 
+               name="buscar" 
+               class="search-input" 
+               placeholder="DNI (8 dígitos) o nombre del socio..." 
+               required
+               minlength="3"
+               autofocus
+               value="<?php echo isset($_POST['buscar']) ? htmlspecialchars($_POST['buscar']) : ''; ?>">
+        <button type="submit" class="btn btn-primary">
+            <span>🔍</span>
+            <span>Buscar</span>
+        </button>
+    </div>
+</form>
                 </div>
+
+                <?php if ($busqueda_tipo == 'nombre' && !empty($socios_encontrados)): ?>
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">
+            🔍 <?php echo count($socios_encontrados); ?> resultado(s) encontrados
+        </h2>
+    </div>
+    <div class="table-container">
+        <table class="table-premium">
+            <thead>
+                <tr>
+                    <th>DNI</th>
+                    <th>Apellidos y Nombres</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach($socios_encontrados as $s): ?>
+                <tr>
+                    <td><?php echo $s['DNI']; ?></td>
+                    <td><?php echo $s['APELLIDOS'] . ', ' . $s['NOMBRES']; ?></td>
+                    <td>
+                        <span class="badge badge-<?php echo $s['ESTADO']; ?>">
+                            <?php echo strtoupper($s['ESTADO']); ?>
+                        </span>
+                    </td>
+                    <td>
+                        <form method="POST" style="display:inline;">
+                            <input type="hidden" name="buscar" value="<?php echo $s['DNI']; ?>">
+                            <button type="submit" class="btn btn-primary" 
+                                style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                👁️ Ver detalle
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php endif; ?>
 
                 <?php if($socio): ?>
                     <!-- RESULTADO ENCONTRADO -->
@@ -335,5 +426,6 @@ if (isset($_POST['dni']) && $_POST['dni'] != '') {
             </div>
 
 <script src="../../js/menu.js"></script>
+<script src="../../js/toast.js"></script>
 </body>
 </html>

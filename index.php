@@ -83,6 +83,11 @@ $asistencias_mes = $stmt_mes->fetch()['total'];
                     <span class="sidebar-item-text">Lista Completa</span>
                 </a>
 
+                <a href="php/pages/escanear_qr.php" class="sidebar-item">
+                    <span class="sidebar-item-icon">📷</span>
+                    <span class="sidebar-item-text">Escanear QR</span>
+                </a>
+
                 <?php if ($usuario['rol'] == 'admin'): ?>
                 <div class="sidebar-divider"></div>
 
@@ -118,7 +123,7 @@ $asistencias_mes = $stmt_mes->fetch()['total'];
         <!-- CONTENIDO PRINCIPAL -->
         <main class="main-content">
             <div class="container">
-                
+
                 <!-- ✅ TOPBAR MEJORADO (CONSISTENTE CON OTRAS PÁGINAS) -->
                 <div class="topbar">
                     <div class="topbar-left">
@@ -139,7 +144,7 @@ $asistencias_mes = $stmt_mes->fetch()['total'];
                     </div>
                 </div>
 
-                                <!-- ACCESOS RÁPIDOS -->
+                <!-- ACCESOS RÁPIDOS -->
                 <div class="card" style="margin-bottom: var(--space-lg);">
                     <div class="card-header">
                         <h2 class="card-title">⚡ Accesos Rápidos</h2>
@@ -274,14 +279,16 @@ $asistencias_mes = $stmt_mes->fetch()['total'];
                             <tbody>
                                 <?php foreach ($actividades as $act): ?>
                                 <tr>
-                                    <td><strong style="color: var(--primary);">#<?php echo $act['socio_id']; ?></strong></td>
+                                    <td><strong style="color: var(--primary);">#<?php echo $act['socio_id']; ?></strong>
+                                    </td>
                                     <td>
                                         <div style="font-weight: 600; color: var(--text-primary);">
                                             <?php echo $act['APELLIDOS'] . ', ' . $act['NOMBRES']; ?>
                                         </div>
                                     </td>
                                     <td>
-                                        <span style="font-family: 'Courier New', monospace; background: rgba(0, 217, 255, 0.1); padding: 0.25rem 0.75rem; border-radius: 6px; font-weight: 600;">
+                                        <span
+                                            style="font-family: 'Courier New', monospace; background: rgba(0, 217, 255, 0.1); padding: 0.25rem 0.75rem; border-radius: 6px; font-weight: 600;">
                                             <?php echo $act['DNI']; ?>
                                         </span>
                                     </td>
@@ -291,13 +298,15 @@ $asistencias_mes = $stmt_mes->fetch()['total'];
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge <?php echo $act['tipo_verificacion'] == 'busqueda_dni' ? 'badge-activo' : 'badge-vitalicio'; ?>">
+                                        <span
+                                            class="badge <?php echo $act['tipo_verificacion'] == 'busqueda_dni' ? 'badge-activo' : 'badge-vitalicio'; ?>">
                                             <?php echo $act['tipo_verificacion'] == 'busqueda_dni' ? '🔍 DNI' : '📱 QR'; ?>
                                         </span>
                                     </td>
                                     <td>
                                         <div style="display: flex; align-items: center; gap: 0.5rem;">
-                                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">
+                                            <div
+                                                style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">
                                                 <?php echo strtoupper(substr($act['verificador'], 0, 1)); ?>
                                             </div>
                                             <span style="font-weight: 500;"><?php echo $act['verificador']; ?></span>
@@ -321,7 +330,8 @@ $asistencias_mes = $stmt_mes->fetch()['total'];
                     <?php else: ?>
                     <div style="text-align: center; padding: var(--space-xl);">
                         <div style="font-size: 4rem; margin-bottom: var(--space-md); opacity: 0.5;">📭</div>
-                        <h3 style="color: var(--text-secondary); margin-bottom: var(--space-sm);">Sin actividad reciente</h3>
+                        <h3 style="color: var(--text-secondary); margin-bottom: var(--space-sm);">Sin actividad reciente
+                        </h3>
                         <p style="color: var(--text-muted); font-size: 0.9rem;">
                             Aún no hay registros de asistencias en el sistema
                         </p>
@@ -364,6 +374,7 @@ $asistencias_mes = $stmt_mes->fetch()['total'];
         }
     }
     </style>
+<script src="js/toast.js"></script>
 </body>
 
 </html>
