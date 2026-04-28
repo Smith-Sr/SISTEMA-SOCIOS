@@ -1554,3 +1554,272 @@ body::before {
 }
 
 
+
+/* ============================================
+   CLASES DE UTILIDAD - index.php
+   ============================================ */
+
+/* Botón pequeño */
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+}
+
+/* Tabla - celda de verificador */
+.verificador-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.verificador-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+/* Tabla - celda de fecha */
+.fecha-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* Badge de DNI en tabla */
+.dni-badge {
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 217, 255, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Estado vacío */
+.empty-state {
+    text-align: center;
+    padding: var(--space-xl);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-sm);
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Utilidades de texto */
+.text-primary  { color: var(--primary); }
+.text-muted    { color: var(--text-muted); font-size: 0.85rem; }
+.fw-600        { font-weight: 600; }
+.mb-lg         { margin-bottom: var(--space-lg); }
+
+/* ============================================
+   CLASES DE UTILIDAD - buscar_socios.php
+   ============================================ */
+
+/* Cards con borde de color */
+.card-border-success { border-left: 6px solid var(--success); }
+.card-border-danger  { border-left: 6px solid var(--danger); }
+
+/* Textos de color */
+.text-success { color: var(--success); }
+.text-danger  { color: var(--danger); }
+
+/* Info labels y values dentro de glass-card */
+.info-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+}
+
+.info-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Íconos de stat con colores personalizados */
+.stat-icon-green  { background: linear-gradient(135deg, #10B981, #059669); }
+.stat-icon-yellow { background: linear-gradient(135deg, #F59E0B, #D97706); }
+.stat-icon-cyan   { background: linear-gradient(135deg, #06B6D4, #0891B2); }
+
+/* Grid de fechas */
+.fechas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-md);
+}
+
+/* Item de fecha dentro de glass-card */
+.fecha-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.fecha-icon { font-size: 2rem; }
+
+/* Título de sección */
+.section-title {
+    font-size: 1.2rem;
+    margin-bottom: var(--space-md);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Menú - info de usuario */
+.menu-user-info {
+    padding: 12px;
+    background: rgba(0, 217, 255, 0.1);
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+/* Menú - item peligroso (logout) */
+.menu-item-danger { color: #FF4560 !important; }
+
+/* Utilidades de margen */
+.mt-lg { margin-top: var(--space-lg); }
+.mb-xl { margin-bottom: var(--space-xl); }
+
+/* ============================================
+   CLASES DE UTILIDAD - ver_socios.php
+   ============================================ */
+
+/* Grid de filtros */
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+/* Fecha vacía en tabla */
+.table-premium td .fecha-vacia { color: var(--text-muted); }
+
+/* ============================================
+   CLASES DE UTILIDAD - gestionar_socios.php
+   ============================================ */
+
+/* Celda de acciones en tabla */
+.acciones-cell {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Botón peligroso */
+.btn-danger {
+    background: linear-gradient(135deg, #FF4560, #C81E1E);
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 69, 96, 0.4);
+}
+
+/* ============================================
+   CLASES DE UTILIDAD - agregar_socio_web.php
+   ============================================ */
+
+/* Lista de información */
+.info-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.info-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Card de información */
+.info-card {
+    margin-top: var(--space-lg);
+}
+
+/* ============================================
+   CLASES DE UTILIDAD - editar_socio.php
+   ============================================ */
+
+/* Grid de info actual del socio */
+.info-actual-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-md);
+}
+
+/* Valor de info más pequeño que info-value */
+.info-value-sm {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ============================================
+   CLASES DE UTILIDAD - gestionar_usuarios.php
+   ============================================ */
+
+/* Formulario con ancho máximo */
+.form-usuarios { max-width: 800px; }
+
+/* Wrapper del input de contraseña */
+.password-wrapper {
+    position: relative;
+}
+
+/* Botón toggle contraseña */
+.toggle-password-btn {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.25rem;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.toggle-password-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Botón de éxito */
+.btn-success {
+    background: linear-gradient(135deg, #00E396, #059669);
+    color: #000;
+    border: none;
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 227, 150, 0.4);
+}

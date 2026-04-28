@@ -1,14 +1,19 @@
 <?php
-$servidor = 'localhost';
-$usuario = 'root';
-$password = '';
+// Archivo de conexión legacy — la conexión activa está en config_session.php (getConexion())
+// Se mantiene solo por compatibilidad con vendor/autoload o referencias externas
+
+$servidor   = 'localhost';
+$usuario    = 'root';
+$password   = '';
 $base_datos = 'sistema_socios';
 
-//Creación de un objeto PDO que permite hablar con la base de datos
-//Se conecta al servidor MySQL especificado en $servidor
-//Accede a la base de datos llamada $base_datos
-//Usa las credenciales $usuario y $password para autenticarse 
-$conexion = new PDO("mysql:host=$servidor;dbname=$base_datos", $usuario, $password);
-echo "👍 ¡Conexión exitosa a la base de datos!";
-
-// 
+try {
+    $conexion = new PDO(
+        "mysql:host=$servidor;dbname=$base_datos;charset=utf8",
+        $usuario,
+        $password
+    );
+    $conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Error de conexión: " . $e->getMessage());
+}
