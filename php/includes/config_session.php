@@ -7,10 +7,10 @@ ini_set('session.cookie_secure', 0); // Cambiar a 1 en producción con HTTPS
 session_start();
 
 function getConexion() {
-    $servidor   = 'localhost';
-    $usuario    = 'root';
-    $password   = '';
-    $base_datos = 'sistema_socios';
+    $servidor = 'sql302.infinityfree.com';
+    $usuario = 'if0_41772418';
+    $password = 'sNh5xh5srDaD';
+    $base_datos = 'if0_41772418_sistema_socios';
 
     try {
         $pdo = new PDO(
@@ -25,19 +25,19 @@ function getConexion() {
     }
 }
 
-function verificarSesion() {
-    if (!isset($_SESSION['usuario_id'])) {
-        header('Location: login.php');
-        exit;
-    }
+function verificarSesion(){
+  if(!isset($_SESSION['usuario_id'])) {
+    header('Location: /login.php');
+    exit;
+  }
 }
 
-function verificarAdmin() {
-    verificarSesion();
-    if ($_SESSION['rol'] != 'admin') {
-        header('Location: index.php');
-        exit;
-    }
+function verificarAdmin(){
+  verificarSesion();
+  if($_SESSION['rol'] != 'admin') {
+    header('Location: /index.php');
+    exit;
+  }
 }
 
 function getUsuarioActual() {
