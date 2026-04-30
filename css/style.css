@@ -444,10 +444,16 @@ body::before {
 /* === MAIN CONTENT === */
 .main-content {
   flex: 1;
-  margin-left: 80px;
+  margin-left: 240px;       /* igual al sidebar expandido */
   padding: var(--space-lg);
   min-height: 100vh;
   transition: margin-left 0.4s ease;
+  min-width: 0;             /* evita desborde en flex */
+}
+
+/* Cuando el sidebar está colapsado (desktop) */
+.main-content.sidebar-collapsed {
+  margin-left: 80px;
 }
 
 .container {
@@ -1006,135 +1012,159 @@ body::before {
   opacity: 1;
 }
 
-/* === RESPONSIVE === */
-@media (max-width: 1024px) {
+/* ============================================
+   RESPONSIVE — ÚNICO BLOQUE, SIN DUPLICADOS
+   ============================================ */
+
+/* --- Tablet ancha: sidebar se colapsa automáticamente --- */
+@media (max-width: 1024px) and (min-width: 769px) {
   .sidebar {
-    width: 240px;
+    width: 80px;            /* colapsa en tablet */
   }
-  
+  .sidebar-title,
+  .sidebar-item-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
+  .sidebar-item {
+    justify-content: center;
+    padding: 0.875rem;
+  }
+  .sidebar-toggle-btn {
+    display: none;          /* ocultar botón colapsar en tablet */
+  }
   .main-content {
-    margin-left: 240px;
+    margin-left: 80px;      /* ajustar al sidebar colapsado */
   }
-  
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* --- Móvil: sidebar se oculta completamente --- */
 @media (max-width: 768px) {
   /* Mostrar hamburger */
   .hamburger-menu {
     display: flex;
   }
-  
-  /* Ocultar sidebar por defecto */
+
+  /* Sidebar: oculto por defecto, desliza al activarse */
   .sidebar {
+    width: 280px !important;
     transform: translateX(-100%);
-    width: 280px;
   }
-  
-  /* Mostrar sidebar cuando está activo */
-  .sidebar.mobile-active, 
   .sidebar.active {
     transform: translateX(0);
   }
-  
-  /* Ocultar botón toggle en móvil */
+
+  /* Ocultar botón colapsar en móvil */
   .sidebar-toggle-btn {
     display: none;
   }
-  
-  .main-content {
+
+  /* Restaurar textos del sidebar en móvil (aunque esté "colapsado" en lógica desktop) */
+  .sidebar-title,
+  .sidebar-item-text {
+    opacity: 1 !important;
+    width: auto !important;
+    overflow: visible !important;
+  }
+  .sidebar-item {
+    justify-content: flex-start !important;
+    padding: 0.875rem 1rem !important;
+  }
+
+  /* Contenido: sin margen lateral, padding superior para el botón hamburger */
+  .main-content,
+  .main-content.sidebar-collapsed {
     margin-left: 0 !important;
     padding: var(--space-md);
     padding-top: 80px;
     width: 100%;
     max-width: 100vw;
     overflow-x: hidden;
+    box-sizing: border-box;
   }
-  
-  .main-content.sidebar-collapsed {
-    margin-left: 0;
-  }
-  
+
   .topbar {
     flex-direction: column;
     gap: var(--space-md);
     padding: var(--space-md);
     width: 100%;
+    box-sizing: border-box;
   }
-  
+
   .topbar-left h1 {
     font-size: 1.5rem;
   }
-  
+
+  /* Stats: 2 columnas en móvil */
   .stats-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
     width: 100%;
   }
 
-    .stat-card {
+  .stat-card {
     width: 100%;
+    padding: var(--space-md);
   }
-  
+
+  .stat-value {
+    font-size: 1.8rem;
+  }
+
+  .stat-label  { font-size: 0.8rem; }
+  .stat-icon   { width: 40px; height: 40px; font-size: 1.2rem; }
+  .stat-trend  { font-size: 0.7rem; padding: 0.2rem 0.5rem; }
+
+  /* Tabla con scroll horizontal */
   .table-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     width: 100%;
     max-width: 100%;
   }
-  
   .table-premium {
     min-width: 600px;
+    font-size: 0.8rem;
   }
-  
+  .table-premium th,
+  .table-premium td {
+    padding: 8px;
+  }
+
+  /* Búsqueda vertical */
   .search-bar {
     flex-direction: column;
   }
-  
+
+  /* Cards */
   .card {
     padding: var(--space-md);
     width: 100%;
+    box-sizing: border-box;
   }
-  
-  .user-profile {
-    padding: 0.5rem 1rem;
-  }
-  
-  .user-avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 0.9rem;
-  }
+  .glass-card { width: 100%; }
 
-    .glass-card {
-    width: 100%;
-  }
+  /* Usuario */
+  .user-profile { padding: 0.5rem 1rem; }
+  .user-avatar  { width: 36px; height: 36px; font-size: 0.9rem; }
 }
 
+/* --- Móvil pequeño --- */
 @media (max-width: 480px) {
-  .main-content {
+  .main-content,
+  .main-content.sidebar-collapsed {
     padding: var(--space-sm);
     padding-top: 80px;
   }
-  
-  .topbar {
-    padding: var(--space-sm);
-  }
-  
-  .card {
-    padding: var(--space-sm);
-  }
-  
-  .stat-value {
-    font-size: 2rem;
-  }
-  
-  .btn {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9rem;
-  }
+  .topbar { padding: var(--space-sm); }
+  .card   { padding: var(--space-sm); }
+  .stat-value { font-size: 1.6rem; }
+  .btn { padding: 0.75rem 1.25rem; font-size: 0.9rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* === UTILIDADES === */
@@ -1145,70 +1175,7 @@ body::before {
 
 
 
-/* --- Hamburguesa móvil --- */
-.hamburger-menu {
-    display: none;
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    background: var(--primary);
-    border: none;
-    border-radius: 0.5rem;
-    padding: 0.6rem;
-    z-index: 1001;
-    cursor: pointer;
-}
-.hamburger-line {
-    width: 24px;
-    height: 3px;
-    background: #fffffff5;
-    margin: 4px 0;
-    display: block;
-    border-radius: 3px;
-}
-
-/* Overlay */
-.sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    backdrop-filter: blur(3px);
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.3s ease;
-    z-index: 1000;
-}
-.sidebar-overlay.active {
-    opacity: 1;
-    visibility: visible;
-}
-
-/* Sidebar responsive */
-.sidebar {
-    position: fixed;
-    top: 0; left: 0;
-    height: 100%;
-    width: 260px;
-    background: #1e293b;
-    color: #fff;
-    transform: translateX(0);
-    transition: transform 0.3s ease;
-    z-index: 1002;
-}
-.sidebar.show {
-    transform: translateX(0);
-}
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-    .sidebar.show {
-        transform: translateX(0);
-    }
-    .hamburger-menu {
-        display: block;
-    }
-}
+/* --- Hamburguesa móvil (solo visibilidad, ya definida arriba) --- */
 
 .grid-form {
     display: grid;
@@ -1271,37 +1238,7 @@ body::before {
 }
 
 
-/* === MEJORAS RESPONSIVE STATS === */
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2x2 en móvil */
-    gap: var(--space-sm); /* Menos espacio entre cards */
-  }
-  
-  .stat-card {
-    padding: var(--space-md); /* Menos padding interno */
-  }
-  
-  .stat-value {
-    font-size: 1.8rem; /* Más pequeño que los 2.5rem originales */
-    margin-bottom: 0.25rem;
-  }
-  
-  .stat-label {
-    font-size: 0.8rem; /* Texto más compacto */
-  }
-  
-  .stat-icon {
-    width: 40px;  /* Ícono más pequeño */
-    height: 40px;
-    font-size: 1.2rem;
-  }
-  
-  .stat-trend {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.5rem;
-  }
-}
+/* Stats responsive ya definido en el bloque responsive principal */
 
 
 
@@ -1822,4 +1759,99 @@ body::before {
 .btn-success:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 227, 150, 0.4);
+}
+
+
+
+
+
+
+/* ============================================
+   GESTIONAR SOCIOS — tabla compacta y profesional
+   Agregar al final de style.css
+   ============================================ */
+
+/* Scroll horizontal visible ARRIBA de la tabla */
+.table-container {
+  overflow-x: auto;
+  overflow-y: visible;
+  /* Duplicar scrollbar arriba con este truco */
+  transform: rotateX(180deg);           /* voltea el eje para que el scroll quede arriba */
+}
+.table-container > table {
+  transform: rotateX(180deg);           /* vuelve a voltear la tabla para que se vea normal */
+}
+
+/* Separador de filas más visible */
+.table-premium tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.table-premium tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* Celda de acciones: botones en una sola fila, compactos */
+.acciones-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: nowrap;
+}
+
+/* Botones de acción: solo ícono en móvil, ícono + texto en desktop */
+.btn-accion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: none;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.btn-accion-carnet {
+  background: rgba(0, 217, 255, 0.15);
+  color: var(--primary, #00D9FF);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+}
+.btn-accion-carnet:hover {
+  background: rgba(0, 217, 255, 0.25);
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.3);
+}
+
+.btn-accion-editar {
+  background: rgba(254, 176, 25, 0.12);
+  color: #FEB019;
+  border: 1px solid rgba(254, 176, 25, 0.3);
+}
+.btn-accion-editar:hover {
+  background: rgba(254, 176, 25, 0.22);
+  box-shadow: 0 0 12px rgba(254, 176, 25, 0.3);
+}
+
+.btn-accion-eliminar {
+  background: rgba(255, 69, 96, 0.12);
+  color: #FF4560;
+  border: 1px solid rgba(255, 69, 96, 0.3);
+}
+.btn-accion-eliminar:hover {
+  background: rgba(255, 69, 96, 0.22);
+  box-shadow: 0 0 12px rgba(255, 69, 96, 0.3);
+}
+
+/* Texto de los botones: oculto en pantallas pequeñas */
+.btn-accion-texto {
+  display: inline;
+}
+
+@media (max-width: 900px) {
+  .btn-accion-texto { display: none; }
+  .btn-accion { padding: 0.4rem 0.5rem; font-size: 1rem; }
 }

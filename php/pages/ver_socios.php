@@ -215,10 +215,11 @@ $total_socios = count($socios);
 
 <script src="../../js/menu.js"></script>
 <script src="../../js/busqueda-tiempo-real.js"></script>
+<script src="../../js/paginacion.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Columnas: [1] = DNI, [2] = Apellidos y Nombres
         inicializarBusquedaConFiltros('busqueda-tiempo-real', 'filtro-estado', 'tabla-socios', [1, 2]);
+        inicializarPaginacion('tabla-socios', 30);
     });
 </script>
 <script src="../../js/toast.js"></script>
